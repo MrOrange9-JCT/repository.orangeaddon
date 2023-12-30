@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.orange" name="Orange Addon" version="0.6.0" provider-name="SrTaronja9JCT">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0" />
+    <import addon="xbmc.gui" version="5.15.0" />
+    <import addon="xbmc.addon" version="19.1.0" />
+    <import addon="script.module.requests" version="2.31.0"/>
+    <import addon="script.module.inputstreamhelper" version="0.6.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="addon.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.python.module"/>
+  <extension point="xbmc.addon.video" />
+  <extension point="xbmc.addon.metadata">
+    <summary lang="es_ES">Addon Summary</summary>
+    <description lang="es_ES">Adddon Description</description>
+    <language>es</language> <!-- language of the content the add-on provides, omit if the add-on does not provide any content -->
+    <platform>all</platform>
+    <license>GPL-2.0-or-later</license>
+    <source>http://github.com/MrOrange9-JCT/plugin.video.orange</source>
+    <assets>
+        <icon>resources/icon.png</icon>
+        <fanart>resources/fanart.jpg</fanart>
+    </assets>
+  </extension>
+</addon>
