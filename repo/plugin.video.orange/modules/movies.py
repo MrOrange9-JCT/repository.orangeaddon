@@ -101,12 +101,16 @@ def updateMovieList():
 def listMovies():
     """List the movies"""
     list_items = []
+    progress = xbmcgui.DialogProgress()
+    current_movie = 0
 
+    progress.create("Orange Add-on", f"Procesando películas... 0/{len(movie_list)}")
     for movie in movie_list:
 
         url = movie_list[movie][1]
         movie_metadata = getMovieMetadata(movie)
         movie_available = getMovieAvailability(url)
+        current_movie += 1
 
         print("Processing movie: " + movie_metadata['title'] + " - Available: " + str(movie_available))
 
@@ -129,14 +133,17 @@ def listMovies():
             list_item.setProperties({"IsPlayable": "false"})
             sendUnavailableNotification(movie_metadata['title'], movie_list[movie][1])
 
-        print("Finished processing movie: " + movie_metadata['title'])
-
         list_items.append((url, list_item, False))
-        
-    print("ALL MOVIES PROCESSED") 
 
+        print("Finished processing movie: " + movie_metadata['title'])
+        progress.update(current_movie*100/len(movie_list), f"Procesando películas... {current_movie}/{len(movie_list)}")
+
+    progress.close()
+    
     xbmcplugin.addDirectoryItems(__handle__, list_items, len(list_items))
     xbmcplugin.addSortMethod(__handle__, xbmcplugin.SORT_METHOD_VIDEO_SORT_TITLE)
+
+    print("ALL MOVIES PROCESSED") 
 
 
 def main(): 
