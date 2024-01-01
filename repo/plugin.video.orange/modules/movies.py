@@ -8,7 +8,7 @@ import addon
 
 addon = addon.Addon()
 xbmcaddon = xbmcaddon.Addon()
-__url__ = addon.__url__ + "?folder=movies"
+__url__ = addon.__url__ #"?folder=movies"
 __handle__ = addon.__handle__
 __args__ = addon.__args__
 
