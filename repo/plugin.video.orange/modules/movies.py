@@ -136,7 +136,7 @@ def listMovies():
         list_items.append((url, list_item, False))
 
         print("Finished processing movie: " + movie_metadata['title'])
-        progress.update(current_movie*100/len(movie_list), f"Procesando películas... {current_movie}/{len(movie_list)}")
+        progress.update(round(current_movie*100/len(movie_list)), f"Procesando películas... {current_movie}/{len(movie_list)}")
 
     progress.close()
     
