@@ -28,7 +28,7 @@ def buildUrl(query):
 def mainMenu():
     """Main menu"""
     xbmcplugin.addDirectoryItem(__handle__, __url__ + "?folder=movies", xbmcgui.ListItem("Películas"), isFolder=True)
-    xbmcplugin.addDirectoryItem(__handle__, __url__ + "?button=settings", xbmcgui.ListItem("Ajustes"), isFolder=False)
+    xbmcplugin.addDirectoryItem(__handle__, __url__ + "?button=settings", xbmcgui.ListItem("Ajustes"), isFolder=True)
 
     xbmcplugin.endOfDirectory(__handle__)
 
