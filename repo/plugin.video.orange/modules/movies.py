@@ -2,10 +2,12 @@ import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
+import xbmcaddon
 import requests
 import addon
 
 addon = addon.Addon()
+xbmcaddon = xbmcaddon.Addon()
 __url__ = addon.__url__ #+ "?action=movies"
 __handle__ = addon.__handle__
 __args__ = addon.__args__
@@ -150,7 +152,9 @@ def listMovies():
 
 def main(): 
     update_list = xbmcgui.ListItem("[COLOR lime] - Actualizar lista de películas - [/COLOR]")
-    update_list.setArt({"thumb": "resources/media/iconRefresh.png", "fanart": "resources/fanart.png"})
+    update_list.setArt({"thumb": "resources/media/iconRefresh.png", "icon": "resources/media/iconRefresh.png", "fanart": xbmcaddon.getAddonInfo('fanart')})
+    print("Fanart: " + xbmcaddon.getAddonInfo('fanart'))
+
     xbmcplugin.addDirectoryItem(handle=__handle__, url=updateMovieList(), listitem=update_list, isFolder=True)
 
     listMovies()
