@@ -150,7 +150,7 @@ def listMovies():
 
 def main(): 
     update_list = xbmcgui.ListItem("[COLOR lime] - Actualizar lista de películas - [/COLOR]")
-    update_list.setArt({"icon": "resources/icons/iconRefresh.png"})
+    update_list.setArt({"thumb": "resources/media/iconRefresh.png", "fanart": "resources/fanart.png"})
     xbmcplugin.addDirectoryItem(handle=__handle__, url=updateMovieList(), listitem=update_list, isFolder=True)
 
     listMovies()
