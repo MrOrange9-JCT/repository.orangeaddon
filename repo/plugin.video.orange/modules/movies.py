@@ -2,10 +2,12 @@ import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
+import xbmcaddon
 import requests
 import addon
 
 addon = addon.Addon()
+xbmcaddon = xbmcaddon.Addon()
 __url__ = addon.__url__ #+ "?action=movies"
 __handle__ = addon.__handle__
 __args__ = addon.__args__
@@ -53,12 +55,25 @@ def getMovieList():
 
     return response.json()
 
+def getMovieUrl(movie):
+    """Get the URL of a movie"""
+
+    if xbmcaddon.getSetting('host') == 0:
+        url = movie_list[movie][1]
+    elif xbmcaddon.getSetting('host') == 1:
+        url = movie_list[movie][2]
+
+    return url
+
 def getMovieAvailability(movie_url):
     """Check if a movie is available"""
 
-    response = requests.get(movie_url + "/info")
+    if xbmcaddon.getSetting('host') == 0:
+        response = requests.get(movie_url + "/info")
+    elif xbmcaddon.getSetting('host') == 1:
+        response = requests.get(movie_url + "/getContent")
 
-    if response.status_code == 404:
+    if response.status_code != 200:
         return False
     else:
         return True
@@ -107,7 +122,7 @@ def listMovies():
     progress.create("Orange Add-on", f"Procesando películas... 0/{len(movie_list)}")
     for movie in movie_list:
 
-        url = movie_list[movie][1]
+        url = getMovieUrl(movie)
         movie_metadata = getMovieMetadata(movie)
         movie_available = getMovieAvailability(url)
         current_movie += 1
@@ -131,14 +146,14 @@ def listMovies():
     
         if not movie_available:
             list_item.setProperties({"IsPlayable": "false"})
-            sendUnavailableNotification(movie_metadata['title'], movie_list[movie][1])
+            sendUnavailableNotification(movie_metadata['title'], url)
 
         list_items.append((url, list_item, False))
 
         print("Finished processing movie: " + movie_metadata['title'])
 
         progress_percent = round(current_movie*100/len(movie_list))
-        progress.update(progress_percent, f"Procesando películas... [COLOR blue]{current_movie}/{len(movie_list)} - {progress_percent}[/COLOR]\n[COLOR silver][I]{movie_metadata['title']} procesada...[/I][/COLOR]")
+        progress.update(progress_percent, f"Procesando películas... [COLOR blue]{current_movie}/{len(movie_list)} - {progress_percent}%[/COLOR]\n[COLOR silver][I]{movie_metadata['title']} procesada...[/I][/COLOR]")
 
     progress.close()
     

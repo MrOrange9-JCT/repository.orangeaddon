@@ -2,6 +2,7 @@ import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
+import xbmcaddon
 import requests
 import urllib
 import urllib.parse as urlparse
@@ -14,23 +15,31 @@ class Addon:
     __args__ = urlparse.parse_qs(sys.argv[2][1:])
         
 addon = Addon()
+xbmcaddon = xbmcaddon.Addon()
 __url__ = addon.__url__
 __handle__ = addon.__handle__
 __args__ = addon.__args__
 
 xbmcplugin.setContent(__handle__, "movies")
 
-__args__.get("action", None)
-
 def buildUrl(query):
     return __url__ + '?' + urllib.urlencode(query)
 
 def mainMenu():
     """Main menu"""
-    xbmcplugin.addDirectoryItem(__handle__, __url__ + "?action=", xbmcgui.ListItem("Películas"), isFolder=True)
-    xbmcplugin.addDirectoryItem(__handle__, __url__ + "", xbmcgui.ListItem("Ajustes"), isFolder=True)
+    xbmcplugin.addDirectoryItem(__handle__, __url__ + "?folder=movies", xbmcgui.ListItem("Películas"), isFolder=True)
+    xbmcplugin.addDirectoryItem(__handle__, __url__ + "?button=settings", xbmcgui.ListItem("Ajustes"), isFolder=True)
 
     xbmcplugin.endOfDirectory(__handle__)
 
 if __name__ == "__main__":
-    movies.main()
+    folder = __args__.get("action", None)
+    button = __args__.get("button", None)
+    
+    if folder is None:
+        mainMenu()
+    elif folder == "movies":
+        movies.main()
+    
+    if button == "settings":
+        xbmcaddon.openSettings()
