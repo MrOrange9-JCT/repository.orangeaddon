@@ -2,13 +2,11 @@ import sys
 import xbmc
 import xbmcgui
 import xbmcplugin
-import xbmcaddon
 import requests
 import addon
 
 addon = addon.Addon()
-xbmcaddon = xbmcaddon.Addon()
-__url__ = addon.__url__ #"?folder=movies"
+__url__ = addon.__url__ #+ "?action=movies"
 __handle__ = addon.__handle__
 __args__ = addon.__args__
 
@@ -55,25 +53,12 @@ def getMovieList():
 
     return response.json()
 
-def getMovieUrl(movie):
-    """Get the URL of a movie"""
-
-    if xbmcaddon.getSetting('host') == 0:
-        url = movie_list[movie][1]
-    elif xbmcaddon.getSetting('host') == 1:
-        url = movie_list[movie][2]
-
-    return url
-
 def getMovieAvailability(movie_url):
     """Check if a movie is available"""
 
-    if xbmcaddon.getSetting('host') == 0:
-        response = requests.get(movie_url + "/info")
-    elif xbmcaddon.getSetting('host') == 1:
-        response = requests.get(movie_url + "/getContent")
+    response = requests.get(movie_url + "/info")
 
-    if response.status_code != 200:
+    if response.status_code == 404:
         return False
     else:
         return True
@@ -122,7 +107,7 @@ def listMovies():
     progress.create("Orange Add-on", f"Procesando películas... 0/{len(movie_list)}")
     for movie in movie_list:
 
-        url = getMovieUrl(movie)
+        url = movie_list[movie][1]
         movie_metadata = getMovieMetadata(movie)
         movie_available = getMovieAvailability(url)
         current_movie += 1
@@ -146,7 +131,7 @@ def listMovies():
     
         if not movie_available:
             list_item.setProperties({"IsPlayable": "false"})
-            sendUnavailableNotification(movie_metadata['title'], url)
+            sendUnavailableNotification(movie_metadata['title'], movie_list[movie][1])
 
         list_items.append((url, list_item, False))
 
@@ -165,7 +150,7 @@ def listMovies():
 
 def main(): 
     update_list = xbmcgui.ListItem("[COLOR lime] - Actualizar lista de películas - [/COLOR]")
-    update_list.setArt({"icon": "resources/iconRefresh.png"})
+    update_list.setArt({"icon": "resources/icons/iconRefresh.png"})
     xbmcplugin.addDirectoryItem(handle=__handle__, url=updateMovieList(), listitem=update_list, isFolder=True)
 
     listMovies()

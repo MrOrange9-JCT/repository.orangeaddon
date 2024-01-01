@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.orange" name="Orange Add-on" version="0.6.8" provider-name="SrTaronja9JCT">
+<addon id="plugin.video.orange" name="Orange Add-on" version="0.6.9" provider-name="SrTaronja9JCT">
   <requires>
     <import addon="xbmc.python" version="3.0.0" />
     <import addon="xbmc.gui" version="5.15.0" />

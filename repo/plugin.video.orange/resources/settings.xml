@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
   <category label="Proveedores">
-    <setting label="Hosting preferido" type="enum" id="host" values="Pixeldrain.|Gofile.io" />
+    <setting label="Hosting preferido" type="enum" id="host" values="Pixeldrain.com" />
   </category>
 </settings>
