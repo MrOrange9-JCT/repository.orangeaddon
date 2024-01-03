@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-  <category label="Proveedores">
-    <setting label="Hosting preferido" type="enum" id="host" values="Pixeldrain.com" />
+  <category label="General">
+    <setting label="Hosting" type="lsep"/>
+    <setting label="Hosting preferido" type="enum" id="preffered_host" values="Pixeldrain.com|Qiwi.gg" />
+    <setting label="Preguntar siempre" type="bool" id="ask_everytime" default="false" subsetting="true"/>
   </category>
 </settings>
