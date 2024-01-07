@@ -58,16 +58,74 @@ def getMovieList():
 
     return response.json()
 
-def getMovieAvailability(movie_url):
+def getMovieUrl(movie):
+    """Get the URL of a movie"""
+
+    url_list = [movie_list[movie][1][0], movie_list[movie][2][0]]
+    movie_available = getMovieAvailability(url_list)
+    ask_everytime = xbmcaddon.getSettingBool("ask_everytime")
+    preffered_host = xbmcaddon.getSetting("preffered_host")
+
+    if movie_available == True:
+        if ask_everytime == True:
+            preffered_host = None
+            dialog = xbmcgui.Dialog()
+            list_items = []
+
+            for host in url_list:
+                if host.startswith("https://pixeldrain"):
+                    list_item = xbmcgui.ListItem("[COLOR darkseagreen]Pixeldrain[/COLOR]")
+                    list_item.setArt({"thumb": main.getAddonMedia("pixeldrain.png")})
+                    list_item.setInfo("video", {"plot": f"{movie_list[movie][1][1]}"})
+                elif host.startswith("https://qiwi"):
+                    list_item = xbmcgui.ListItem(f"[COLOR mediumpurple]Qiwi[/COLOR]")
+                    list_item.setArt({"thumb": main.getAddonMedia("qiwi.png")})
+                    list_item.setInfo("video", {"plot": f"{movie_list[movie][2][1]}"})
+
+                list_items.append(list_item)
+
+            ret = dialog.select("Selecciona un host", list_items, preselect=0, useDetails = True)
+        
+        if preffered_host == 0 or (ask_everytime == True and ret == 0):
+            return url_list[0]
+        elif preffered_host == 1 or (ask_everytime == True and ret == 1):
+            return url_list[1]
+    
+    elif movie_available == "Pixeldrain":
+        return url_list[0]
+    elif movie_available == "Qiwi":
+        return url_list[1]
+    else:
+        return None
+
+def getMovieAvailability(url_list):
     """Check if a movie is available"""
 
-    response = requests.get(movie_url + "/info")
+    response_pixeldrain = requests.get(url_list[0] + "/info")
+    response_qiwi = requests.get(url_list[1].replace("lol", "gg/file")[:-4])
+    
+    available = []
 
-    if response.status_code == 404:
-        return False
+    if response_pixeldrain.status_code == 404:
+        available.append(False)
     else:
-        return True
+        available.append(True)
 
+    if response_qiwi.status_code == 404:
+        available.append(False)
+    else:
+        available.append(True)
+
+    if available == [True, True]:
+        available = True
+    elif available == [True, False]:
+        available = "Pixeldrain"
+    elif available == [False, True]:
+        available = "Qiwi"
+    else:
+        available = False
+
+    return available
 
 def sendUnavailableNotification(movie_title, movie_url):
     """Send a notification to Discord when a movie is unavailable"""
@@ -112,17 +170,21 @@ def listMovies():
     progress.create("Orange Add-on", f"Procesando películas... 0/{len(movie_list)}")
     for movie in movie_list:
 
-        url = movie_list[movie][1]
+        movie_available = getMovieAvailability([movie_list[movie][1][0], movie_list[movie][2][0]])
+        url = getMovieUrl(movie)
         movie_metadata = getMovieMetadata(movie)
-        movie_available = getMovieAvailability(url)
         current_movie += 1
 
         print("Processing movie: " + movie_metadata['title'] + " - Available: " + str(movie_available))
 
-        if movie_available:
+        if movie_available == True:
             list_item = xbmcgui.ListItem(f"{movie_metadata['title']} [COLOR blue]({movie_metadata['year']})[/COLOR]")
+        elif movie_available == "Pixeldrain":
+            list_item = xbmcgui.ListItem(f"{movie_metadata['title']} [COLOR blue]({movie_metadata['year']})[/COLOR][COLOR darkseagreen] [Pixeldrain][/COLOR]")
+        elif movie_available == "Qiwi":
+            list_item = xbmcgui.ListItem(f"{movie_metadata['title']} [COLOR blue]({movie_metadata['year']})[/COLOR][COLOR mediumpurple] [Qiwi][/COLOR]")
         else:
-            list_item = xbmcgui.ListItem(f"[COLOR silver]{movie_metadata['title']}[/COLOR] [COLOR steelblue]({movie_metadata['year']})[/COLOR] [COLOR red] [NO DISPONIBLE][/COLOR]")
+            list_item = xbmcgui.ListItem(f"[COLOR silver]{movie_metadata['title']}[/COLOR] [COLOR steelblue]({movie_metadata['year']})[/COLOR][COLOR red][B] [NO DISPONIBLE][/B][/COLOR]")
             
         list_item.setInfo("video", {"genre": movie_metadata['genres'],
                                     "rating": movie_metadata['rating'],
